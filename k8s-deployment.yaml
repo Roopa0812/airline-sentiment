@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: airline-sentiment
-          image: YOUR_DOCKERHUB_USERNAME/airline-sentiment:latest
+          image: roopa08/airline-sentiment:latest
           ports:
             - containerPort: 8501
           resources:
