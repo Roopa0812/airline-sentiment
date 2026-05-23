@@ -1,13 +1,40 @@
 # ✈️ Airline Tweet Sentiment Analyzer
 
-An end-to-end ML system that classifies airline tweets as **positive**, **neutral**, or **negative** — with a full MLOps pipeline.
+An end-to-end MLOps project that classifies airline tweets as **positive**, **neutral**, or **negative** using Machine Learning — with a full production pipeline.
 
-## Stack
-- **ML**: Scikit-learn (TF-IDF + Logistic Regression)
-- **App**: Streamlit
-- **Containerization**: Docker
-- **CI/CD**: GitHub Actions
-- **Orchestration**: Kubernetes
+## 📊 Model Performance
+| Metric | Score |
+|--------|-------|
+| Accuracy | 76% |
+| Dataset | US Airline Twitter Sentiment (14,872 tweets) |
+| Algorithm | TF-IDF + Logistic Regression |
+| Classes | Positive, Neutral, Negative |
+
+---
+
+## 🛠️ Tech Stack
+| Layer | Technology |
+|-------|-----------|
+| ML Model | Scikit-learn |
+| Web App | Streamlit |
+| Containerization | Docker |
+| CI/CD | GitHub Actions |
+| Orchestration | Kubernetes |
+| Registry | Docker Hub |
+
+---
+
+## 🏗️ Architecture
+
+```
+Code Push → GitHub → GitHub Actions → Train & Test → Build Docker Image
+                                                            ↓
+                                                       Docker Hub
+                                                            ↓
+                                                       Kubernetes
+                                                            ↓
+                                                    Streamlit Web App
+```
 
 ---
 
@@ -15,7 +42,7 @@ An end-to-end ML system that classifies airline tweets as **positive**, **neutra
 
 ```bash
 # 1. Install dependencies
-pip install -r requirements.txt
+pip install scikit-learn pandas streamlit plotly
 
 # 2. Train the model
 python train.py
@@ -23,7 +50,6 @@ python train.py
 # 3. Run the Streamlit app
 streamlit run app.py
 ```
-
 App opens at → http://localhost:8501
 
 ---
@@ -40,35 +66,46 @@ docker run -p 8501:8501 airline-sentiment
 
 ---
 
-## ⚙️ GitHub Actions Setup
+## ⚙️ GitHub Actions CI/CD
 
-Add these secrets to your GitHub repo (Settings → Secrets → Actions):
+Automatically triggered on every push to `main`:
 
+1. ✅ Install dependencies
+2. ✅ Train the model
+3. ✅ Run 8 pytest tests
+4. ✅ Build Docker image
+5. ✅ Push to Docker Hub
+
+**Required GitHub Secrets:**
 | Secret | Value |
 |--------|-------|
 | `DOCKERHUB_USERNAME` | Your Docker Hub username |
 | `DOCKERHUB_TOKEN` | Your Docker Hub access token |
-
-**Pipeline flow on push to `main`:**
-1. Train model
-2. Run pytest
-3. Build Docker image
-4. Push to Docker Hub
 
 ---
 
 ## ☸️ Kubernetes Deployment
 
 ```bash
-# 1. Edit k8s-deployment.yaml — replace YOUR_DOCKERHUB_USERNAME
-
-# 2. Apply
+# Deploy
 kubectl apply -f k8s-deployment.yaml
 
-# 3. Check status
+# Check pods (2 replicas running)
 kubectl get pods
-kubectl get service airline-sentiment-service
+
+# Access the app
+kubectl port-forward service/airline-sentiment-service 8501:80
 ```
+Then open → http://localhost:8501
+
+---
+
+## 🧪 Tests
+
+```bash
+python -m pytest tests/ -v
+```
+8 tests covering data loading, label validation, model predictions and probability scores.
 
 ---
 
@@ -76,16 +113,21 @@ kubectl get service airline-sentiment-service
 
 ```
 airline-sentiment/
-├── data/               # Dataset
-│   └── Tweets.csv
-├── model/              # Saved model (generated after training)
-├── tests/              # Pytest tests
-│   └── test_model.py
-├── .github/workflows/  # GitHub Actions
-│   └── ci-cd.yml
-├── train.py            # Model training
-├── app.py              # Streamlit app
-├── Dockerfile
-├── requirements.txt
-└── k8s-deployment.yaml
+├── .github/workflows/
+│   └── ci-cd.yml         # GitHub Actions pipeline
+├── data/
+│   └── Tweets.csv        # Dataset (14,872 tweets)
+├── model/                # Saved model (auto-generated)
+├── tests/
+│   └── test_model.py     # 8 pytest tests
+├── train.py              # Model training script
+├── app.py                # Streamlit web app
+├── Dockerfile            # Container definition
+├── k8s-deployment.yaml   # Kubernetes deployment
+└── requirements.txt      # Python dependencies
 ```
+
+---
+
+## 👩‍💻 Author
+GitHub: [@Roopa0812](https://github.com/Roopa0812)
